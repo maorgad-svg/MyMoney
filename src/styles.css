@@ -325,6 +325,17 @@ body {
 
 .app-header {
   margin-bottom: 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .app-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 
 .app-header h1 {
@@ -1352,6 +1363,141 @@ body {
   .save-button {
     width: 100%;
   }
+}
+
+/* =========== Asset Actions (Edit/Delete Buttons) =========== */
+
+.asset-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.edit-asset-button,
+.delete-asset-button {
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.edit-asset-button {
+  background-color: var(--pill-bg);
+  color: var(--text-main);
+  border: 1px solid var(--card-border);
+}
+
+.edit-asset-button:hover {
+  background-color: var(--accent-orange);
+  color: white;
+  transform: translateY(-1px);
+}
+
+.delete-asset-button {
+  background-color: #fff5f5;
+  color: #cc0000;
+  border: 1px solid #ffd1d1;
+}
+
+.delete-asset-button:hover {
+  background-color: #cc0000;
+  color: white;
+  transform: translateY(-1px);
+}
+
+/* Delete Confirmation Modal */
+.delete-modal {
+  max-width: 500px;
+}
+
+@media (min-width: 769px) {
+  .delete-modal {
+    min-width: 450px;
+  }
+}
+
+.delete-modal-body {
+  padding: 24px 24px 0 24px;
+  background: var(--card-bg);
+}
+
+.delete-modal-body > p {
+  margin: 0 0 20px 0;
+  font-size: 16px;
+  color: var(--text-main);
+  line-height: 1.5;
+}
+
+.delete-asset-info {
+  background-color: #fff5f5;
+  border: 2px solid #ffd1d1;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 20px 0;
+  text-align: center;
+}
+
+.delete-asset-info strong {
+  display: block;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #222222;
+  word-break: break-word;
+}
+
+.delete-asset-details {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #666666;
+  font-weight: 500;
+}
+
+.delete-asset-details span {
+  color: #666666;
+}
+
+.delete-warning {
+  font-size: 14px;
+  color: #cc0000;
+  font-weight: 700;
+  margin: 20px 0 0 0 !important;
+  text-align: center;
+}
+
+.delete-confirm-button {
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: #cc0000;
+  color: white;
+  cursor: pointer;
+  box-shadow: 0 8px 16px rgba(204, 0, 0, 0.3);
+  transition: all var(--transition-fast);
+}
+
+.delete-confirm-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 20px rgba(204, 0, 0, 0.4);
+  background: #aa0000;
+}
+
+.delete-confirm-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.delete-modal .modal-actions {
+  margin-top: 0;
+  padding: 20px 24px;
 }
 
 /* =========== Liabilities Styling =========== */

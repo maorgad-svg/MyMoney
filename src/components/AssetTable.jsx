@@ -5,10 +5,12 @@ import EditAssetModal from './EditAssetModal';
  * AssetTable Component
  * 
  * Displays a table/list of all assets with columns for name, category, subtype,
- * current value, and last updated date. Includes edit functionality.
+ * current value, and last updated date. Includes edit and delete functionality.
  */
-function AssetTable({ assets, onAssetUpdated }) {
+function AssetTable({ assets, onAssetUpdated, onAssetDeleted }) {
   const [editingAsset, setEditingAsset] = useState(null);
+  const [deletingAsset, setDeletingAsset] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   // Format currency
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('en-US', {
@@ -62,6 +64,31 @@ function AssetTable({ assets, onAssetUpdated }) {
     await onAssetUpdated(id, updatedAsset);
   };
 
+  // Handle delete button click
+  const handleDelete = (asset) => {
+    setDeletingAsset(asset);
+  };
+
+  // Handle confirm delete
+  const handleConfirmDelete = async () => {
+    if (!deletingAsset) return;
+    
+    setIsDeleting(true);
+    try {
+      await onAssetDeleted(deletingAsset.id);
+      setDeletingAsset(null);
+    } catch (err) {
+      alert('Failed to delete asset: ' + err.message);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  // Handle cancel delete
+  const handleCancelDelete = () => {
+    setDeletingAsset(null);
+  };
+
   // Separate assets from liabilities for display
   const assetsOnly = assets.filter(asset => asset.category !== 'Liabilities');
   const liabilities = assets.filter(asset => asset.category === 'Liabilities');
@@ -99,13 +126,22 @@ function AssetTable({ assets, onAssetUpdated }) {
                 <td>{formatCurrency(asset.currentValueUSD)}</td>
                 <td>{formatDate(asset.updatedAt)}</td>
                 <td>
-                  <button
-                    className="edit-asset-button"
-                    onClick={() => handleEdit(asset)}
-                    title="Edit asset"
-                  >
-                    Edit
-                  </button>
+                  <div className="asset-actions">
+                    <button
+                      className="edit-asset-button"
+                      onClick={() => handleEdit(asset)}
+                      title="Edit asset"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="delete-asset-button"
+                      onClick={() => handleDelete(asset)}
+                      title="Delete asset"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -132,13 +168,22 @@ function AssetTable({ assets, onAssetUpdated }) {
                     <td className="negative-value">-{formatCurrency(liability.currentValueUSD)}</td>
                     <td>{formatDate(liability.updatedAt)}</td>
                     <td>
-                      <button
-                        className="edit-asset-button"
-                        onClick={() => handleEdit(liability)}
-                        title="Edit liability"
-                      >
-                        Edit
-                      </button>
+                      <div className="asset-actions">
+                        <button
+                          className="edit-asset-button"
+                          onClick={() => handleEdit(liability)}
+                          title="Edit liability"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="delete-asset-button"
+                          onClick={() => handleDelete(liability)}
+                          title="Delete liability"
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -155,6 +200,52 @@ function AssetTable({ assets, onAssetUpdated }) {
           onClose={handleCloseModal}
           onSave={handleSaveAsset}
         />
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deletingAsset && (
+        <div className="modal-overlay" onClick={handleCancelDelete}>
+          <div className="modal-content delete-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Confirm Delete</h2>
+              <button className="modal-close" onClick={handleCancelDelete}>×</button>
+            </div>
+            
+            <div className="delete-modal-body">
+              <p>Are you sure you want to delete this {deletingAsset.category === 'Liabilities' ? 'liability' : 'asset'}?</p>
+              
+              <div className="delete-asset-info">
+                <strong>{deletingAsset.name || 'Unnamed'}</strong>
+                <div className="delete-asset-details">
+                  <span>{deletingAsset.category || 'Unknown'}</span>
+                  <span>•</span>
+                  <span>{deletingAsset.subtype || 'No subtype'}</span>
+                </div>
+              </div>
+              
+              <p className="delete-warning">⚠️ This action cannot be undone.</p>
+            </div>
+            
+            <div className="modal-actions">
+              <button 
+                type="button" 
+                className="cancel-button"
+                onClick={handleCancelDelete}
+                disabled={isDeleting}
+              >
+                Cancel
+              </button>
+              <button 
+                type="button" 
+                className="delete-confirm-button"
+                onClick={handleConfirmDelete}
+                disabled={isDeleting}
+              >
+                {isDeleting ? 'Deleting...' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

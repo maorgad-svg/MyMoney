@@ -186,3 +186,34 @@ export async function updateAsset(id, asset) {
   }
 }
 
+/**
+ * Deletes an asset record from Airtable
+ * @param {string} id - The Airtable record ID
+ * @returns {Promise<void>}
+ */
+export async function deleteAsset(id) {
+  try {
+    const response = await fetch(`${BASE_URL}/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${API_KEY}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error('Airtable error details:', errorData);
+      
+      const errorMessage = errorData.error?.message || response.statusText;
+      throw new Error(`Airtable API error: ${response.status} - ${errorMessage}`);
+    }
+
+    // Return the deleted record data for confirmation
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error deleting asset:', error);
+    throw error;
+  }
+}
+
