@@ -116,3 +116,4 @@ export function getExchangeRate() {
   return rate ? parseFloat(rate) : 3.60; // Default fallback
 }
 
+

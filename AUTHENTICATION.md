@@ -122,3 +122,4 @@ To test the authentication:
 - Verify Firebase credentials in `.env`
 - Ensure Firebase project has Google authentication enabled
 
+
