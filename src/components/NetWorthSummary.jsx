@@ -41,6 +41,15 @@ function NetWorthSummary({ assets }) {
     return acc;
   }, {});
 
+  // Calculate liquid vs illiquid totals
+  const liquidTotal = assetsOnly
+    .filter(asset => asset.liquidity === 'Liquid')
+    .reduce((sum, asset) => sum + asset.currentValueUSD, 0);
+  
+  const illiquidTotal = assetsOnly
+    .filter(asset => asset.liquidity === 'Illiquid')
+    .reduce((sum, asset) => sum + asset.currentValueUSD, 0);
+
   // Counting animation effect
   useEffect(() => {
     setIsAnimating(true);
@@ -142,6 +151,29 @@ function NetWorthSummary({ assets }) {
             <div className="amount negative">-{formatCurrency(totalLiabilities)}</div>
           </div>
         )}
+      </div>
+
+      {/* Liquidity Breakdown */}
+      <div className="liquidity-summary">
+        <h3 className="liquidity-title">Liquidity Breakdown</h3>
+        <div className="liquidity-cards">
+          <div className="liquidity-card liquid">
+            <div className="liquidity-icon">💧</div>
+            <div className="liquidity-content">
+              <h4>Liquid Assets</h4>
+              <div className="liquidity-amount">{formatCurrency(liquidTotal)}</div>
+              <p className="liquidity-description">Easily convertible to cash</p>
+            </div>
+          </div>
+          <div className="liquidity-card illiquid">
+            <div className="liquidity-icon">🏛️</div>
+            <div className="liquidity-content">
+              <h4>Illiquid Assets</h4>
+              <div className="liquidity-amount">{formatCurrency(illiquidTotal)}</div>
+              <p className="liquidity-description">Long-term investments</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

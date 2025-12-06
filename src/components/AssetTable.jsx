@@ -11,6 +11,8 @@ function AssetTable({ assets, onAssetUpdated, onAssetDeleted }) {
   const [editingAsset, setEditingAsset] = useState(null);
   const [deletingAsset, setDeletingAsset] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [sortField, setSortField] = useState('name');
+  const [sortDirection, setSortDirection] = useState('asc');
   // Format currency
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('en-US', {
@@ -89,9 +91,46 @@ function AssetTable({ assets, onAssetUpdated, onAssetDeleted }) {
     setDeletingAsset(null);
   };
 
-  // Separate assets from liabilities for display
-  const assetsOnly = assets.filter(asset => asset.category !== 'Liabilities');
-  const liabilities = assets.filter(asset => asset.category === 'Liabilities');
+  // Handle sort
+  const handleSort = (field) => {
+    if (sortField === field) {
+      // Toggle direction if clicking same field
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      // Set new field with ascending direction
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
+
+  // Sort function
+  const sortAssets = (assetList) => {
+    return [...assetList].sort((a, b) => {
+      let aValue = a[sortField];
+      let bValue = b[sortField];
+
+      // Handle different data types
+      if (sortField === 'currentValueUSD' || sortField === 'originalValue') {
+        aValue = parseFloat(aValue) || 0;
+        bValue = parseFloat(bValue) || 0;
+      } else if (sortField === 'updatedAt') {
+        aValue = new Date(aValue).getTime() || 0;
+        bValue = new Date(bValue).getTime() || 0;
+      } else {
+        // String comparison
+        aValue = String(aValue || '').toLowerCase();
+        bValue = String(bValue || '').toLowerCase();
+      }
+
+      if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+      if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+  };
+
+  // Separate and sort assets from liabilities
+  const assetsOnly = sortAssets(assets.filter(asset => asset.category !== 'Liabilities'));
+  const liabilities = sortAssets(assets.filter(asset => asset.category === 'Liabilities'));
 
   return (
     <div className="assets-section">
@@ -100,12 +139,27 @@ function AssetTable({ assets, onAssetUpdated, onAssetDeleted }) {
         <table>
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Category</th>
-              <th>Subtype</th>
-              <th>Original Value</th>
-              <th>Value (USD)</th>
-              <th>Updated At</th>
+              <th className="sortable" onClick={() => handleSort('name')}>
+                Name {sortField === 'name' && (sortDirection === 'asc' ? '↑' : '↓')}
+              </th>
+              <th className="sortable" onClick={() => handleSort('category')}>
+                Category {sortField === 'category' && (sortDirection === 'asc' ? '↑' : '↓')}
+              </th>
+              <th className="sortable" onClick={() => handleSort('subtype')}>
+                Subtype {sortField === 'subtype' && (sortDirection === 'asc' ? '↑' : '↓')}
+              </th>
+              <th className="sortable" onClick={() => handleSort('liquidity')}>
+                Liquidity {sortField === 'liquidity' && (sortDirection === 'asc' ? '↑' : '↓')}
+              </th>
+              <th className="sortable" onClick={() => handleSort('originalValue')}>
+                Original Value {sortField === 'originalValue' && (sortDirection === 'asc' ? '↑' : '↓')}
+              </th>
+              <th className="sortable" onClick={() => handleSort('currentValueUSD')}>
+                Value (USD) {sortField === 'currentValueUSD' && (sortDirection === 'asc' ? '↑' : '↓')}
+              </th>
+              <th className="sortable" onClick={() => handleSort('updatedAt')}>
+                Updated At {sortField === 'updatedAt' && (sortDirection === 'asc' ? '↑' : '↓')}
+              </th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -115,6 +169,11 @@ function AssetTable({ assets, onAssetUpdated, onAssetDeleted }) {
                 <td>{asset.name}</td>
                 <td>{asset.category}</td>
                 <td>{asset.subtype}</td>
+                <td>
+                  <span className={`liquidity-badge ${asset.liquidity === 'Liquid' ? 'liquid' : 'illiquid'}`}>
+                    {asset.liquidity || 'Liquid'}
+                  </span>
+                </td>
                 <td>
                   {asset.currency === 'NIS' ? '₪' : '$'}
                   {asset.originalValue.toLocaleString('en-US', { 
@@ -148,7 +207,7 @@ function AssetTable({ assets, onAssetUpdated, onAssetDeleted }) {
             {liabilities.length > 0 && (
               <>
                 <tr className="liabilities-divider">
-                  <td colSpan="7">
+                  <td colSpan="8">
                     <strong>Liabilities (Debts)</strong>
                   </td>
                 </tr>
@@ -157,6 +216,11 @@ function AssetTable({ assets, onAssetUpdated, onAssetDeleted }) {
                     <td>{liability.name}</td>
                     <td><span className="liability-badge">Liability</span></td>
                     <td>{liability.subtype}</td>
+                    <td>
+                      <span className={`liquidity-badge ${liability.liquidity === 'Liquid' ? 'liquid' : 'illiquid'}`}>
+                        {liability.liquidity || 'Illiquid'}
+                      </span>
+                    </td>
                     <td>
                       {liability.currency === 'NIS' ? '₪' : '$'}
                       {liability.originalValue.toLocaleString('en-US', { 

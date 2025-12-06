@@ -123,3 +123,4 @@ To test the authentication:
 - Ensure Firebase project has Google authentication enabled
 
 
+

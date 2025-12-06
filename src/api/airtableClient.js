@@ -42,6 +42,7 @@ export async function fetchAssets() {
       currency: record.fields.currency || 'USD',
       originalValue: record.fields.originalValue || record.fields.currentValueUSD || 0,
       currentValueUSD: record.fields.currentValueUSD || 0,
+      liquidity: record.fields.liquidity || 'Liquid',
       updatedAt: record.fields.updatedAt || '',
     }));
 
@@ -71,6 +72,7 @@ export async function createAsset(asset) {
       category: asset.category,
       subtype: asset.subtype,
       currentValueUSD: asset.currentValueUSD,
+      liquidity: asset.liquidity || 'Liquid',
       updatedAt: new Date().toISOString(),
     };
 
@@ -114,6 +116,7 @@ export async function createAsset(asset) {
       currency: data.fields.currency || 'USD',
       originalValue: data.fields.originalValue || data.fields.currentValueUSD || 0,
       currentValueUSD: data.fields.currentValueUSD || 0,
+      liquidity: data.fields.liquidity || 'Liquid',
       updatedAt: data.fields.updatedAt || '',
     };
   } catch (error) {
@@ -136,6 +139,7 @@ export async function updateAsset(id, asset) {
       category: asset.category,
       subtype: asset.subtype,
       currentValueUSD: asset.currentValueUSD,
+      liquidity: asset.liquidity || 'Liquid',
       updatedAt: new Date().toISOString(),
     };
 
@@ -178,6 +182,7 @@ export async function updateAsset(id, asset) {
       currency: data.fields.currency || 'USD',
       originalValue: data.fields.originalValue || data.fields.currentValueUSD || 0,
       currentValueUSD: data.fields.currentValueUSD || 0,
+      liquidity: data.fields.liquidity || 'Liquid',
       updatedAt: data.fields.updatedAt || '',
     };
   } catch (error) {

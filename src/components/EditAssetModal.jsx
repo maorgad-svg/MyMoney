@@ -14,6 +14,7 @@ function EditAssetModal({ asset, onClose, onSave }) {
   const [name, setName] = useState(asset.name);
   const [currency, setCurrency] = useState(asset.currency || 'USD');
   const [value, setValue] = useState(asset.originalValue || asset.currentValueUSD);
+  const [liquidity, setLiquidity] = useState(asset.liquidity || 'Liquid');
   
   // UI state
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -84,6 +85,7 @@ function EditAssetModal({ asset, onClose, onSave }) {
         currency,
         originalValue: numValue,
         currentValueUSD: usdValue,
+        liquidity,
       };
 
       // Call the parent's callback to save
@@ -199,6 +201,21 @@ function EditAssetModal({ asset, onClose, onSave }) {
                 disabled={isSubmitting}
                 required
               />
+            </div>
+
+            {/* Liquidity Select */}
+            <div className="form-group">
+              <label htmlFor="edit-liquidity">Liquidity</label>
+              <select
+                id="edit-liquidity"
+                value={liquidity}
+                onChange={(e) => setLiquidity(e.target.value)}
+                disabled={isSubmitting}
+                required
+              >
+                <option value="Liquid">Liquid (easily convertible to cash)</option>
+                <option value="Illiquid">Illiquid (not easily convertible)</option>
+              </select>
             </div>
           </div>
 

@@ -15,6 +15,7 @@ function AddAssetForm({ onAssetCreated }) {
   const [name, setName] = useState('');
   const [currency, setCurrency] = useState('USD');
   const [value, setValue] = useState('');
+  const [liquidity, setLiquidity] = useState('Liquid');
   
   // UI state
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -87,6 +88,7 @@ function AddAssetForm({ onAssetCreated }) {
         currency,
         originalValue: numValue,
         currentValueUSD: usdValue,
+        liquidity,
       };
 
       // Call the parent's callback to create the asset
@@ -98,6 +100,7 @@ function AddAssetForm({ onAssetCreated }) {
       setName('');
       setCurrency('USD');
       setValue('');
+      setLiquidity('Liquid');
       setSuccess(true);
 
       // Clear success message after 3 seconds
@@ -197,6 +200,21 @@ function AddAssetForm({ onAssetCreated }) {
               disabled={isSubmitting}
               required
             />
+          </div>
+
+          {/* Liquidity Select */}
+          <div className="form-group">
+            <label htmlFor="liquidity">Liquidity</label>
+            <select
+              id="liquidity"
+              value={liquidity}
+              onChange={(e) => setLiquidity(e.target.value)}
+              disabled={isSubmitting}
+              required
+            >
+              <option value="Liquid">Liquid (easily convertible to cash)</option>
+              <option value="Illiquid">Illiquid (not easily convertible)</option>
+            </select>
           </div>
         </div>
 
