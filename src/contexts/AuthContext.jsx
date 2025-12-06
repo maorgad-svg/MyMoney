@@ -5,6 +5,7 @@ import {
   onAuthStateChanged 
 } from 'firebase/auth';
 import { auth, googleProvider } from '../config/firebase';
+import { isEmailAllowed } from '../config/allowedEmails';
 
 const AuthContext = createContext({});
 
@@ -32,7 +33,15 @@ export const AuthProvider = ({ children }) => {
   const loginWithGoogle = async () => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
-      return result.user;
+      const user = result.user;
+      
+      // Check if user's email is in the allowed list
+      if (!isEmailAllowed(user.email)) {
+        await signOut(auth);
+        throw new Error(`Access denied. The email "${user.email}" is not authorized to access this application.`);
+      }
+      
+      return user;
     } catch (error) {
       console.error('Error signing in with Google:', error);
       throw error;
